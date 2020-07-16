@@ -1,0 +1,24 @@
+Package: OptLDA
+Title: LDA Optimisation with resampling to equal sample size
+Version: 1.0.0.000
+Date: 2019-09-06
+Authors@R: c(person("Ardern", "Hulme-Beaman", email = "ardernhb@gmail.com", role = c("aut", "cre")))
+Author: Ardern Hulme-Beaman [aut, cre]
+Maintainer: Ardern Hulme-Beaman <ardernhb@gmail.com>
+Description: This package presents tools to assess the performance of LDA to data with unequal sample size and with different numbers of dimensions included in the analyses.
+Depends:
+    R (>= 3.5)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/ArdernHB/LDAOpt
+BugReports: https://github.com/ArdernHB/LDAOpt
+RoxygenNote: 7.1.1
+Imports:
+    grDevices (>= 3.5.3),
+    Morpho (>= 2.8),
+    MASS (>= 7.3-51.6),
+    iterators (>= 1.0.12),
+    parallel (>= 3.5.3),
+    doParallel (>= 1.0.15),
+    foreach (>= 1.5.0)
