@@ -5,7 +5,7 @@ Date: 2019-09-06
 Authors@R: c(person("Ardern", "Hulme-Beaman", email = "ardernhb@gmail.com", role = c("aut", "cre")))
 Author: Ardern Hulme-Beaman [aut, cre]
 Maintainer: Ardern Hulme-Beaman <ardernhb@gmail.com>
-Description: This package presents tools to assess the performance of LDA to data with unequal sample size and with different numbers of dimensions included in the analyses.
+Description: This package presents tools to assess the performance of LDA to data with unequal sample size and with different numbers of dimensions included in the analyses. The function is specifically used to avoid data leakage of unequal sample size and test data into training data and predictive classification models that use LDA and other data rotation approaches (i.e. Generalised Procrustes Analyses used in geometric morphometric and PCA). Note that for geometric morphometric data this package does not yet have functionality to avoid data leakage as a result of sliding landmarks.
 Depends:
     R (>= 3.5)
 License: GPL-2
