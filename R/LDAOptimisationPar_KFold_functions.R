@@ -150,9 +150,9 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
       }
 
       if (TestTraining==TRUE){
-        MANOVARes <- summary(manova(BalPCA$x[,1:PClim] ~ BalancingGrps$Newfactors[-FoldPos]))
+        MANOVARes <- summary(stats::manova(BalPCA$x[,1:PClim] ~ BalancingGrps$Newfactors[-FoldPos]))
         MANOVAmat[Kf,] <- MANOVARes$stats[1,]
-        ANOVARes <- summary(aov(BalPCA$x[,PClim]~BalancingGrps$Newfactors[-FoldPos]))
+        ANOVARes <- summary(stats::aov(BalPCA$x[,PClim]~BalancingGrps$Newfactors[-FoldPos]))
         ANOVAmat[Kf,] <- do.call(c, c(ANOVARes[[1]][1,]))
       }
 
@@ -359,9 +359,9 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
         }
 
         if (TestTraining==TRUE){
-          MANOVARes <- summary(manova(BalPCA$x[,1:i] ~ BalancingGrps$Newfactors[-FoldPos]))
+          MANOVARes <- summary(stats::manova(BalPCA$x[,1:i] ~ BalancingGrps$Newfactors[-FoldPos]))
           MANOVAmat[Kf,,i-1] <- MANOVARes$stats[1,]
-          ANOVARes <- summary(aov(BalPCA$x[,i]~BalancingGrps$Newfactors[-FoldPos]))
+          ANOVARes <- summary(stats::aov(BalPCA$x[,i]~BalancingGrps$Newfactors[-FoldPos]))
           ANOVAmat[Kf,,i-1] <- do.call(c, c(ANOVARes[[1]][1,]))
         }
 
