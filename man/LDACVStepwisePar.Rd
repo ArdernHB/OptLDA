@@ -5,13 +5,13 @@
 \title{Stepwise LDA correct cross-validation with equal sample size using parallel processing}
 \usage{
 LDACVStepwisePar(
-  Data,
+  DiscriminationData,
   GroupMembership,
   EqualIter = 100,
   SampleSize = NA,
   Verbose = FALSE,
   ShapeGPA = FALSE,
-  Sliding = NA,
+  Sliding = NULL,
   SizeShape = FALSE,
   PClim = 10,
   PlotResults = TRUE,
@@ -19,7 +19,7 @@ LDACVStepwisePar(
 )
 }
 \arguments{
-\item{Data}{A matrix of numeric data or an array for shape data. If shape data is used please set ShapeGPA=TRUE. A shape data array is expected to include landmarks as rows, landmark dimensions (either 2 or 3) as columns and specimens as slices. If a matrix is used, please ensure no columns have erroneously been loaded as factors.}
+\item{DiscriminationData}{A matrix of numeric data or an array for shape data. If shape data is used please set ShapeGPA=TRUE. A shape data array is expected to include landmarks as rows, landmark dimensions (either 2 or 3) as columns and specimens as slices. If a matrix is used, please ensure no columns have erroneously been loaded as factors.}
 
 \item{GroupMembership}{A vector of group classifications, either as factors or as characters.}
 
