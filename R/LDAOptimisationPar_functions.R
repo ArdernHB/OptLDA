@@ -184,6 +184,7 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' the smallest sample size.
 #'
 #' @param PlotResults logical (either TRUE or FALSE, default set to TRUE) to determine whether to plot the results of the stepwise discriminant analyses.
+#' @param CombinePlots logical set to FALSE to indicate whether the results of this analysis should be plotted on a previous result that's currently open (e.g. for randomised analyses).
 #' @inheritParams LDACVPar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'

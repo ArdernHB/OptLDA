@@ -20,7 +20,7 @@ RatData
 \description{
 A geometric morphometric derived dataset from the data of Hulme-Beaman et al.
 2019. The dataset contains an array of 395 specimens each with 105 landmarks.
-Scale data is also included as is individual specimen info. A matrix of full
-Procrustes distances calculated among the specimens is also provided.
+Centroid size data is also included as is individual specimen info. A matrix
+of full Procrustes distances calculated among the specimens is also provided.
 }
 \keyword{datasets}

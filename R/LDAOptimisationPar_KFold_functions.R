@@ -21,6 +21,7 @@
 #' of PCs to use.
 #'
 #' @param KFold value default set to 5
+#' @param TestTraining default set to FALSE, indicates whether an ANOVA and MANOVA should be carried at each step and iteration.
 #' @inheritParams LDACVStepwisePar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'
@@ -34,7 +35,7 @@
 #' @export
 
 
-LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PCA=FALSE, PClim=10, TestTraining=FALSE){
+LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10, TestTraining=FALSE){
   #DiscriminationData=Scores
   #DiscriminationData=Shape
   #GroupMembership=Groups
