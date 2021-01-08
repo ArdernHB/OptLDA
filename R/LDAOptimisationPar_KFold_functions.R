@@ -182,7 +182,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
-    ParEqualIterKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize, KFold = KFold)
+    ParEqualIterKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize, KFold = KFold, TestTraining = TestTraining)
   }
 
   parallel::stopCluster(clust)
