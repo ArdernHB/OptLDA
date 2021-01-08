@@ -60,6 +60,14 @@ out the function will call on the input value in PClim to determine the number
 of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
 of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
 to FALSE and the resampling procedure will be carried out just on matrix provided.
+
+Note that the method in this function is to remove data leakage from unequal sample
+size, but that the leave-one-out method here does not train the identification model
+separately for each specimen. Instead it is assumed that the single specimen being
+left out in the cross validation procedure contributes so little data leakage as to
+be unimportant. However, if this is a concern please use the k-fold method in
+\code{LDACVManyPar} and \code{LDACVManyStepwisePar} and set k to the sample size of
+the smallest sample size.
 }
 \author{
 Ardern Hulme-Beaman

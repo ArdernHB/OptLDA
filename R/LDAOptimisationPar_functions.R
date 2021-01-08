@@ -23,6 +23,14 @@
 #' of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
 #' to FALSE and the resampling procedure will be carried out just on matrix provided.
 #'
+#' Note that the method in this function is to remove data leakage from unequal sample
+#' size, but that the leave-one-out method here does not train the identification model
+#' separately for each specimen. Instead it is assumed that the single specimen being
+#' left out in the cross validation procedure contributes so little data leakage as to
+#' be unimportant. However, if this is a concern please use the k-fold method in
+#' \code{LDACVManyPar} and \code{LDACVManyStepwisePar} and set k to the sample size of
+#' the smallest sample size.
+#'
 #' @param DiscriminationData A matrix of numeric data or an array for shape data. If shape data is used please set ShapeGPA=TRUE. A shape data array is expected to include landmarks as rows, landmark dimensions (either 2 or 3) as columns and specimens as slices. If a matrix is used, please ensure no columns have erroneously been loaded as factors.
 #' @param GroupMembership A vector of group classifications, either as factors or as characters.
 #' @param EqualIter an integer determining the number of times the data will be resampled to equal sample size. Default is set to 100.
@@ -166,6 +174,14 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
 #' of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
 #' to FALSE and the resampling procedure will be carried out just on matrix provided.
+#'
+#' Note that the method in this function is to remove data leakage from unequal sample
+#' size, but that the leave-one-out method here does not train the identification model
+#' separately for each specimen. Instead it is assumed that the single specimen being
+#' left out in the cross validation procedure contributes so little data leakage as to
+#' be unimportant. However, if this is a concern please use the k-fold method in
+#' \code{LDACVManyPar} and \code{LDACVManyStepwisePar} and set k to the sample size of
+#' the smallest sample size.
 #'
 #' @param PlotResults logical (either TRUE or FALSE, default set to TRUE) to determine whether to plot the results of the stepwise discriminant analyses.
 #' @inheritParams LDACVPar
