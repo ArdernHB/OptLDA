@@ -96,7 +96,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
   }
 
-  Array2MatPar <- function(Array){
+  Array2Mat <- function(Array){
     Matrix <- matrix(NA, nrow = dim(Array)[3], ncol = length(c(t(Array[,,1]))))
     for (i in 1:dim(Array)[3]){
       #i <- 1
@@ -120,10 +120,10 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     if (ShapeGPA==TRUE){
       BalDataShape <- TrainingData[,,BalancingGrps$IndexedLocations]
       BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = Sliding))
-      BalPCA <- stats::prcomp(Array2MatPar(BalData$orpdata))
+      BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
       BalTest <- Morpho::align2procSym(BalData, UnknownData)
-      BalTestPCA <- stats::predict(BalPCA, newdata = Array2MatPar(BalTest))
+      BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
     } else {
       BalData <- TrainingData[BalancingGrps$IndexedLocations,]
       BalPCA <- stats::prcomp(x = BalData)

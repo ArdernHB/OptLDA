@@ -14,7 +14,6 @@ LDACVManyPar(
   ShapeGPA = FALSE,
   Sliding = NULL,
   SizeShape = FALSE,
-  PCA = FALSE,
   PClim = 10,
   TestTraining = FALSE
 )
@@ -39,6 +38,8 @@ LDACVManyPar(
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
 \item{PClim}{integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.}
+
+\item{TestTraining}{default set to FALSE, indicates whether an ANOVA and MANOVA should be carried at each step and iteration.}
 }
 \value{
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.

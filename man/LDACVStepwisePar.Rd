@@ -38,6 +38,8 @@ LDACVStepwisePar(
 \item{PClim}{integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.}
 
 \item{PlotResults}{logical (either TRUE or FALSE, default set to TRUE) to determine whether to plot the results of the stepwise discriminant analyses.}
+
+\item{CombinePlots}{logical set to FALSE to indicate whether the results of this analysis should be plotted on a previous result that's currently open (e.g. for randomised analyses).}
 }
 \value{
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.

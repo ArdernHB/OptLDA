@@ -89,7 +89,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 
   }
 
-  Array2MatPar <- function(Array){
+  Array2Mat <- function(Array){
     Matrix <- matrix(NA, nrow = dim(Array)[3], ncol = length(c(t(Array[,,1]))))
     for (i in 1:dim(Array)[3]){
       #i <- 1
@@ -140,10 +140,10 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
       # consideration the k folding
       if (ShapeGPA==TRUE){
         BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
-        BalPCA <- stats::prcomp(Array2MatPar(BalData$orpdata))
+        BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
         BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
-        BalTestPCA <- stats::predict(BalPCA, newdata = Array2MatPar(BalTest))
+        BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
       } else {
         BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
 
@@ -349,10 +349,10 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
         # consideration the k folding
         if (ShapeGPA==TRUE){
           BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
-          BalPCA <- stats::prcomp(Array2MatPar(BalData$orpdata))
+          BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
           BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
-          BalTestPCA <- stats::predict(BalPCA, newdata = Array2MatPar(BalTest))
+          BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
         } else {
           BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
 
