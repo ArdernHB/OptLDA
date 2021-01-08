@@ -1,0 +1,124 @@
+---
+title: "OptLDA_vignette"
+author: "Ardern Hulme-Beaman"
+date: "17 July 2020"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{OptLDA_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(OptLDA)
+require(MASS)
+```
+
+OptLDA: Optimisation of LDA with dimensionality reduction with resampling to equal sample size
+--------------------------------------------------------------------------------------------------
+
+This vignette walks the reader through the OptLDA package using a published dataset of Rattini dental morphology. The goal of this vignette is to familiarize the reader with the necessity of resampling to equal sample size and also the requirement of reducing dimensionatlity to maximise group discrimination. As this method is computationally intensive with multiple resampling to equal sample size the functions in this package are run with parallel processing (as opposed to normal functionatlity in R that is single threaded); this greatly improves the efficiency and speed of the processing in this package. This vignette is designed for all levels.
+
+First of all we will demonstrate the necessity of balanced design with a demonstration of how unbalanced design (i.e. where multiple groups have variable sample sizes) can bias results and produce erroneously high correct-cross-validation percentages. We will conduct this by using a geometric morephometrics dataset of Rattus rattus dental morphology (the first mandibular molar). We will then examine the functionality of the package and its functions with a more complex dataset of multiple species with varying sample sizes.
+
+*Rattus rattus* unbalanced design and bias identification
+-------------------------------------------------------------------------------------------------------
+
+To demonstrate the necessity of resampling to equal sample size we will first demonstrate an unbalanced design. The first dataset we will examine comes from 100 specimens of *R. rattus* all from Mainland SE Asia. For this dataset we will work with the raw shape data.  We will use the elbow plot method for dimensionality reduction were the variance shift is dramatic.
+
+
+``` {r Carrying out superimpostion on black rat data}
+
+BlackRatGPA <- Morpho::procSym(BlackRat$LMArray)
+
+plot(BlackRatGPA$Variance[1:20,2], type = 'b', xlab = 'PCs', ylab =  '% Variance')
+
+```
+
+In the above plot we can see the shift in variance is around 3 PCs and the number of PCs that cumulatively represent 95% is 11 (marked by the vertical line). We can randomly assign specimens in our dataset to one of 2 groups, A or B. These specimens all come from the same region but given unbalanced groups like those simulated here, correct cross-validation (CCV) % using a leave-one-out method will be high.
+
+
+``` {r Randomly assigning groups and calculating the leave one out correct cross validation for them}
+
+Groups <- rep('A', 100)
+Groups[sample(1:100, 20)] <- 'B'
+
+Rat3PCsLDA <- MASS::lda(BlackRatGPA$PCscores[, 1:3], grouping = Groups, CV = TRUE)
+sum(Rat3PCsLDA$class==Groups)/length(Groups)*100
+
+```
+
+The CCV% using a leave-one-out method is around the level percentage of individuals that belong to the larger group. Therefore we need to resample to equal sample size to get an unbiased indication of the true level of CCV.
+
+
+``` {r Calculating the leave one out correct cross validation for simulated groups resampled to equal sample size}
+
+Rat3PCsLDABalanced <- LDACVPar(DiscriminationData = BlackRatGPA$rotated,
+                               GroupMembership=Groups,
+                               EqualIter=2000,
+                               PClim=3,ShapeGPA = TRUE)
+
+```
+
+By resampling to equal sample size (i.e. 20 in this case) we get a distribution of CCV% with a central tendency around 50%, the percentage expected given random correct identification to two balanced groups. However, notice the variance of CCV% using the leave-one-out method is high, and many iterations are higher or lower than 50% CCV. Inherently the leave-one-out method has high variances in CCV.
+
+An alternative approach is to leave out many (known as 'leave-p-out'), and an important benefit of leaving out many is that the end cross-validation results are less prone to erroneously variable results. This is in contrast to leave-one-out methods, which tend to show a high degree of variation; as seen in the above example we know the result should be random between 2 groups, so therefore should be around 50% CCV, but over multiple resampling exercises we see a huge amount of variance in the CCV%.
+
+
+``` {r Centroid and variance of leave one out correct cross validation for simulated groups resampled to equal sample size}
+
+print(paste('mean=', mean(Rat3PCsLDABalanced),
+      ', median=', median(Rat3PCsLDABalanced),
+      ', 25th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.25),
+      ', 75th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.75), sep = ''))
+```
+
+We can achieve a leave out many CCV by a number of different methods, in this case because we are both resampling to equal sample size and carrying out a leave out many CCV, we are using what's known as a stratified approach. In other words we are subsetting out data so the sample sizes of our groups are equal (this is then the first layer) and then we are partitioning our data into equal training and test samples and assessing the CCV of each partition iteratively (this is the second layer of our stratified approach). The partitioning of our data into training and test samples can be done using a 'folding' approach (known as 'k-fold cross-validation'). A folding approach randomly splits the data into 'folds' of approximately equal size (e.g. in a sample of 100 specimens if it is folded 4 times you will have 4 groups of 25 specimens each, if folded 3 times you will have 2 groups of 33 and 1 of 34). The number of folds is defined by the user and is known as 'k' (hence being called 'k-fold cross-validation'). Instead of leaving one specimen out as in the leave-one-out method, this cross validation approach leaves out one of the folds and tries to reassign that to the correct group. Importantly to note, if k is equal to the number of specimens in a sample then effectively this is a leave-one-out approach; a leave-one-out approach is therefore a special kind of k-fold CCV.
+
+The benefit of folding is that every specimen in the dataset is treated as training sample and a test sample at least once; other methods such as a Monte-Carlo approach runs for a user defined number of iterations and randomly take out a portion of the data and treat that as the test set, but the result can be that some specimens are never used as test specimens. Using a k-fold approach ensures all specimens are treated as training and test specimens, but the end result CCV% will be influenced by the number of folds and the number of samples in each fold. What this means is that the resulting CCV% will include specific fractions (i.e. CCV%s will not be continuously distributed); for example, given k=10 and two samples A and B each of 20 specimens, then in any single CCV iteration there will be 4 specimens treated as unknowns (2 specimens from sample A and 2 from sample B), so the resulting CCV% will always be 0, 0.25, 0.5, 0.75 or 1.
+
+In our case, with unequal sample size, we are effectively doing a combination of the two leave out many procedures (i.e. stratified cross validation): a Monte-Carlo random partitioning because we are randomly subsetting our data to equal sample size; and then a k-fold because ultimately when we run the CCV exercise we are doing this on equally partitioned data. This means although we benefit from the k-fold approach of treating each specimen as a training and test sample, we still may have specimens in out total dataset that never appear in any of our sampling iterations. As a result, it is important to carry out this multiple iterations many times and for this process to be feasible within R the OptLDA functions employ parallel processing.
+
+
+``` {r Calculating the K-Fold correct cross validation }
+
+Rat3PCsLDABalancedKfold <- LDACVManyPar(DiscriminationData = BlackRatGPA$rotated,
+                                        GroupMembership=Groups,
+                                        EqualIter=2000,
+                                        PClim=3,ShapeGPA = TRUE, KFold = 10)
+
+```
+
+From this k-fold CCV we can see the central tendency is much clearly close to the expected 50% mark and although the range is similarly large as the leave-one-out approach, the variance is much lower.
+
+The output of the LDACVManyPar is a matrix with the rows for each resampling to equal sample size iteration (i.e. the number of rows equals `EqualIter`) and columns for each folding iteration (therefore number of columns equals `KFold`). We can take the median of the rows as a summary statistic for each iteration to respect the use of each specimen being used as both a training and test sample and then we can take the global median from the resulting vector to represent the summary of all randomly sampled iterations. 
+
+
+``` {r Centroid and variance of k-fold correct cross validation for simulated groups resampled to equal sample size}
+
+Rat3PCsLDABalancedKfoldSummary <- apply(Rat3PCsLDABalancedKfold, 1, median)
+
+print(paste('mean=', mean(Rat3PCsLDABalancedKfoldSummary),
+      ', median=', median(Rat3PCsLDABalancedKfoldSummary),
+      ', 25th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.25),
+      ', 75th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.75), sep = ''))
+
+```
+
+
+
+
+Rattini tribe unbalanced design and bias identification
+-------------------------------------------------------------------------------------------------------
+
+We will also use two methods for dimensionality reduction for discriminant analyes: 1. we will use the number of PCs that cumulatively represent 95% of variance; 2. we will use an elbow plot method were the variance shift is dramatic.
+
+
+
