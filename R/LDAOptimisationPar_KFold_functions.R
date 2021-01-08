@@ -397,7 +397,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
   doParallel::registerDoParallel(clust)
 
   a <- 1
-  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput, .packages = 'abind') %dopar% {
+  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
     ParEqualIterStepwiseKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, KFold=KFold, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, TestTraining=TestTraining)
   }
 
