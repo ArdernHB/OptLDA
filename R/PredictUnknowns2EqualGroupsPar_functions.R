@@ -26,7 +26,7 @@
 #' of PCs required see the function \code{LDACVManyStepwisePar} for stepwise
 #' testing of each set of consecutive PCs.
 #'
-#' @param TrainingDatadata matrix where specimens are rows. If shape data (ShapeGPA=TRUE) then the data is expected in an array format where rows are landmarks, columns are landmark dimensions and slices are specimens. The order of the specimens should match the GroupMembership vector.
+#' @param TrainingData matrix where specimens are rows. If shape data (ShapeGPA=TRUE) then the data is expected in an array format where rows are landmarks, columns are landmark dimensions and slices are specimens. The order of the specimens should match the GroupMembership vector.
 #' @param UnknownData as for Training data but with the unknown data.
 #' @inheritParams LDACVStepwisePar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
@@ -41,7 +41,7 @@
 #' @export
 
 
-PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10, TestTraining=FALSE){
+PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10){
   #DiscriminationData=Scores
   #DiscriminationData=Shape
   #GroupMembership=Groups
