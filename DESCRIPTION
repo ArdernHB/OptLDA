@@ -22,3 +22,7 @@ Imports:
     parallel (>= 3.5.3),
     doParallel (>= 1.0.15),
     foreach (>= 1.5.0)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
