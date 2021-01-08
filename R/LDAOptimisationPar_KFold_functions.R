@@ -193,10 +193,10 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 
   if (Verbose==TRUE){
     names(ParResults) <- c('Iteration.Summaries', 'Verbose.Output')
-    hist(apply(ParResults$Iteration.Summaries, 1, 'median'), main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
+    graphics::hist(apply(ParResults$Iteration.Summaries, 1, 'median'), main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
     return(ParResults)
   } else {
-    hist(apply(ParResults[[1]], 1, 'median'), main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
+    graphics::hist(apply(ParResults[[1]], 1, 'median'), main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
     return(ParResults[[1]])
   }
 

@@ -146,10 +146,10 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
   if (Verbose==TRUE){
     names(ParResults) <- c('Iteration.Summaries', 'Verbose.Output')
-    hist(ParResults$Iteration.Summaries)
+    graphics::hist(ParResults$Iteration.Summaries)
     return(ParResults, main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
   } else {
-    hist(ParResults[[1]], main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
+    graphics::hist(ParResults[[1]], main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
     return(ParResults[[1]])
   }
 
