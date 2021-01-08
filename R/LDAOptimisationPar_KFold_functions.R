@@ -275,7 +275,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
 
     NewResults <- PreviousResults
     for (i in 1:length(ResultList)){
-      NewResults[[i]] <- abind(PreviousResults[[i]], ResultList[[i]], along = 1)
+      NewResults[[i]] <- abind::abind(PreviousResults[[i]], ResultList[[i]], along = 1)
       #if (length(dim(PreviousResults[[i]]))==2){
       #  NewResults[[i]] <- rbind(PreviousResults[[i]], ResultList[[i]])
       #} else (length(dim(PreviousResults[[i]]))==3){
@@ -397,7 +397,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
   doParallel::registerDoParallel(clust)
 
   a <- 1
-  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
+  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput, .packages = 'abind') %dopar% {
     ParEqualIterStepwiseKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, KFold=KFold, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, TestTraining=TestTraining)
   }
 
