@@ -76,7 +76,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
     #GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
-      minSampSize <- min(table(GroupMembership))
+      minSampSize <- min(table(as.character(GroupMembership)))
     } else {
       minSampSize <- GroupSize
     }
@@ -292,7 +292,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
     #DiscriminationData=PairwiseShapePCAmat; GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
-      minSampSize <- min(table(GroupMembership))
+      minSampSize <- min(table(as.character(GroupMembership)))
     } else {
       minSampSize <- GroupSize
     }

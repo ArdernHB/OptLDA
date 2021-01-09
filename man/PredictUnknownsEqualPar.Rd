@@ -13,11 +13,12 @@ PredictUnknownsEqualPar(
   ShapeGPA = FALSE,
   Sliding = NULL,
   SizeShape = FALSE,
-  PClim = 10,
-  TestTraining = FALSE
+  PClim = 10
 )
 }
 \arguments{
+\item{TrainingData}{matrix where specimens are rows. If shape data (ShapeGPA=TRUE) then the data is expected in an array format where rows are landmarks, columns are landmark dimensions and slices are specimens. The order of the specimens should match the GroupMembership vector.}
+
 \item{UnknownData}{as for Training data but with the unknown data.}
 
 \item{GroupMembership}{A vector of group classifications, either as factors or as characters.}
@@ -33,8 +34,6 @@ PredictUnknownsEqualPar(
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
 \item{PClim}{integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.}
-
-\item{TrainingDatadata}{matrix where specimens are rows. If shape data (ShapeGPA=TRUE) then the data is expected in an array format where rows are landmarks, columns are landmark dimensions and slices are specimens. The order of the specimens should match the GroupMembership vector.}
 }
 \value{
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.

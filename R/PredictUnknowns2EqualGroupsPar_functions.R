@@ -38,6 +38,7 @@
 #' @import doParallel
 #' @import parallel
 #' @import foreach
+#' @import abind
 #' @export
 
 
@@ -58,6 +59,9 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   #PClim=3; ShapeGPA = TRUE; KFold = 5
 
 
+  #TrainingData = CompDatasort$ShapeData[,,ArchRem]; UnknownData = CompDatasort$ShapeData[,,-ArchRem]; GroupMembership= CompDatasort$info$species[ArchRem]
+  #EqualIter=100; SampleSize=NA; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=16
+
   if (ShapeGPA==TRUE & length(dim(TrainingData))==2){
     stop('TrainingData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
   }
@@ -71,7 +75,12 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
     NewResults <- PreviousResults
     for (i in 1:length(ResultList)){
-      NewResults[[i]] <- cbind(PreviousResults[[i]], ResultList[[i]])
+      if (is.vector(ResultList[[i]])){
+        NewResults[[i]] <- cbind(PreviousResults[[i]], ResultList[[i]])
+      } else if (length(dim(ResultList[[i]]))==3){
+        NewResults[[i]] <- abind::abind(PreviousResults[[i]], ResultList[[i]], 3)
+      }
+
     }
 
     return(NewResults)
@@ -83,7 +92,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     #GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
-      minSampSize <- min(table(GroupMembership))
+      minSampSize <- min(table(as.character(GroupMembership)))
     } else {
       minSampSize <- GroupSize
     }
@@ -106,7 +115,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   }
 
   ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SizeShape, PClim, SampleSize){
-    #DiscriminationData=DiscriminationData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
+    #DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
     #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding; PCA=PCA; PClim=PClim; SizeShape = SizeShape
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
@@ -135,7 +144,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     LDApredict <- stats::predict(LDAres, newdata = BalTestPCA[,1:PClim])
 
 
-    return(list(UnknownCalls=LDApredict$class, GrpPredictProbs=LDApredict$posterior))
+    return(list(UnknownCalls=as.character(LDApredict$class), GrpPredictProbs=LDApredict$posterior))
 
 
   }
