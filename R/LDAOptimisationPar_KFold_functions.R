@@ -428,7 +428,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
 
     FoldCVP <- apply(ParResults$CVP, 2, FoldingSummary, KFold)
 
-    graphics::plot(y = colMeans(FoldCVP), x = 2:PClim, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'K')
+    graphics::plot(y = colMeans(FoldCVP), x = 2:PClim, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'PCs')
     graphics::abline(h = seq(from = 20, to = 100, by = 10), v = seq(from = 2, to = PClim, by =2), lty = '1919')
 
     CCVRange <- apply(FoldCVP, MARGIN = 2, FUN = stats::quantile, probs = c(.05, .95))
