@@ -333,7 +333,7 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
                       col = transpar('darkblue', alpha = 25),
                       border = NA)
 
-    #graphics::lines(y = colMeans(ParResults$CVP*100), x = 2:PClim, col='darkblue', lwd=3)
+    graphics::lines(y = colMeans(ParResults$CVP*100), x = 2:PClim, col='darkblue', lwd=3)
 
     #graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
   }
