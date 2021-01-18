@@ -306,6 +306,16 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
   }
 
 
+  Array2Mat <- function(Array){
+    Matrix <- matrix(NA, nrow = dim(Array)[3], ncol = length(c(t(Array[,,1]))))
+    for (i in 1:dim(Array)[3]){
+      #i <- 1
+      Matrix[i,] <- c(t(Array[,,i]))
+    }
+    return(Matrix)
+  }
+
+
   ParEqualIterStepwiseKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, KFold, ParVerbose=Verbose, SizeShape, PClim, TestTraining){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership
     #GrpMem=Groups
