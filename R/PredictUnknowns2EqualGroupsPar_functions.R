@@ -66,6 +66,17 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     stop('TrainingData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
   }
 
+  if (ShapeGPA==TRUE){
+    if (dim(TrainingData)[3]!=length(GroupMembership)){
+      stop('Number of specimens in TrainingData does not appear to match the number of speicmens listed in GroupMembership')
+    }
+  } else {
+    if (dim(TrainingData)[1]!=length(GroupMembership)){
+      stop('Number of specimens in TrainingData does not appear to match the number of speicmens listed in GroupMembership')
+    }
+  }
+
+
 
   chr2nu <- function(X){
     as.numeric(as.character(X))
@@ -77,8 +88,8 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     for (i in 1:length(ResultList)){
       if (is.vector(ResultList[[i]])){
         NewResults[[i]] <- cbind(PreviousResults[[i]], ResultList[[i]])
-      } else if (length(dim(ResultList[[i]]))==3){
-        NewResults[[i]] <- abind::abind(PreviousResults[[i]], ResultList[[i]], 3)
+      } else if (length(dim(ResultList[[i]]))>=2){
+        NewResults[[i]] <- abind::abind(PreviousResults[[i]], ResultList[[i]], along = 3)
       }
 
     }
