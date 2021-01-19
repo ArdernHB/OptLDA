@@ -57,11 +57,11 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 
 
   if (ShapeGPA==TRUE){
-    if (dim(TrainingData)[3]!=length(GroupMembership)){
+    if (dim(DiscriminationData)[3]!=length(GroupMembership)){
       stop('Number of specimens in DiscriminationData does not appear to match the number of speicmens listed in GroupMembership')
     }
   } else {
-    if (dim(TrainingData)[1]!=length(GroupMembership)){
+    if (dim(DiscriminationData)[1]!=length(GroupMembership)){
       stop('Number of specimens in DiscriminationData does not appear to match the number of speicmens listed in GroupMembership')
     }
   }
@@ -273,11 +273,11 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
 
 
   if (ShapeGPA==TRUE){
-    if (dim(TrainingData)[3]!=length(GroupMembership)){
+    if (dim(DiscriminationData)[3]!=length(GroupMembership)){
       stop('Number of specimens in DiscriminationData does not appear to match the number of speicmens listed in GroupMembership')
     }
   } else {
-    if (dim(TrainingData)[1]!=length(GroupMembership)){
+    if (dim(DiscriminationData)[1]!=length(GroupMembership)){
       stop('Number of specimens in DiscriminationData does not appear to match the number of speicmens listed in GroupMembership')
     }
   }
