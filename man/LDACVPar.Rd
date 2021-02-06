@@ -13,7 +13,6 @@ LDACVPar(
   ShapeGPA = FALSE,
   Sliding = NULL,
   SizeShape = FALSE,
-  PCA = FALSE,
   PClim = 10
 )
 }
@@ -34,8 +33,6 @@ LDACVPar(
 
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
-\item{PCA}{logical (either TRUE or FALSE, default set to FALSE). If the data is raw data and requires a PCA first then a PCA is carried out using the \code{\link[stats]{prcomp}} function of the \code{stats} package.}
-
 \item{PClim}{integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.}
 }
 \value{
@@ -54,8 +51,8 @@ The function is primarily for use with resampling unequal groups to equal sample
 size a set number of times. This process is carried out with parrallel processing.
 If shape data is used the function offers the option to carry out a new GPA and
 subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-is used the funciton offers the option to carry out a new PCA with each resampling
-exercise (set PCA=TRUE). In both these instances where a fresh PCA is carried
+is used the function carries out a new PCA with each resampling
+exercise. In both these instances where a fresh PCA is carried
 out the function will call on the input value in PClim to determine the number
 of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
 of PC scores) is examined then both the arguments ShapeGPA and PCA can be set

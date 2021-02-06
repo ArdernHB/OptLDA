@@ -128,7 +128,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SizeShape, PClim, SampleSize){
     #DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
-    #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding; PCA=PCA; PClim=PClim; SizeShape = SizeShape
+    #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding;  PClim=PClim; SizeShape = SizeShape
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
 
     #As we're cbinding the new factors with the folding, the folding will be

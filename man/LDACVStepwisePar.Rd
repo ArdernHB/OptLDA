@@ -56,8 +56,8 @@ The function is primarily for use with resampling unequal groups to equal sample
 size a set number of times. This process is carried out with parallel processing.
 If shape data is used the function offers the option to carry out a new GPA and
 subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-is used the function offers the option to carry out a new PCA with each resampling
-exercise (set PCA=TRUE). In both these instances where a fresh PCA is carried
+is used the function carries out a new PCA with each resampling
+exercise. In both these instances where a fresh PCA is carried
 out the function will call on the input value in PClim to determine the number
 of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
 of PC scores) is examined then both the arguments ShapeGPA and PCA can be set

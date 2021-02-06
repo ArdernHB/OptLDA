@@ -114,7 +114,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
   ParEqualIterKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SizeShape, PClim, KFold, SampleSize, TestTraining){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
-    #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding; PCA=PCA; PClim=PClim; SizeShape = SizeShape
+    #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding; PClim=PClim; SizeShape = SizeShape
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
     SampSizeFoo <- min(table(BalancingGrps$Newfactors))
 
@@ -366,7 +366,10 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
       ANOVAmat <- array(NA, dim = c(KFold, 5, PClim-1), dimnames = list(paste('F', 1:KFold, sep=''), 1:5, paste('PC', 1:(PClim-1), sep='')))
     }
 
-    for(i in 2:PClim){
+
+    for(Kf in 1:KFold){
+      #Kf=1
+
       #i=2
       if (ShapeGPA==TRUE){
         BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
@@ -374,25 +377,26 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
         BalData <- DiscriminationData[BalancingGrps$IndexedLocations,]
       }
 
-      for (Kf in 1:KFold){
-        #Kf <- 1
-        FoldPos <- which(NewFactFoldIndex[,2]==Kf)
+      FoldPos <- which(NewFactFoldIndex[,2]==Kf)
 
-        #Figure out sliding issue
-        # Note this logical statement starts in different places for the shape data versus non shape data
-        # this is because the shape data needs two steps of transformation and each needs to take into
-        # consideration the k folding
-        if (ShapeGPA==TRUE){
-          BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
-          BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
+      #Figure out sliding issue
+      # Note this logical statement starts in different places for the shape data versus non shape data
+      # this is because the shape data needs two steps of transformation and each needs to take into
+      # consideration the k folding
+      if (ShapeGPA==TRUE){
+        BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
+        BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
-          BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
-          BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
-        } else {
-          BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
+        BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
+        BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
+      } else {
+        BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
 
-          BalTestPCA <- stats::predict(BalPCA, newdata = BalData[FoldPos,])
-        }
+        BalTestPCA <- stats::predict(BalPCA, newdata = BalData[FoldPos,])
+      }
+
+
+      for(i in 2:PClim){
 
         if (TestTraining==TRUE){
           MANOVARes <- summary(stats::manova(BalPCA$x[,1:i] ~ BalancingGrps$Newfactors[-FoldPos]))
@@ -409,9 +413,13 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
 
         GrpFoldRes[Kf,,i-1] <- diag(table(LDAmany$class,BalancingGrps$Newfactors[FoldPos]))/table(BalancingGrps$Newfactors[FoldPos])
 
+
       }
 
     }
+
+
+
 
     if (ParVerbose==TRUE){
       if (TestTraining==TRUE){
