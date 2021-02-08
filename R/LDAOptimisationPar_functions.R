@@ -19,9 +19,7 @@
 #' is used the function carries out a new PCA with each resampling
 #' exercise. In both these instances where a fresh PCA is carried
 #' out the function will call on the input value in PClim to determine the number
-#' of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
-#' of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
-#' to FALSE and the resampling procedure will be carried out just on matrix provided.
+#' of PCs to use.
 #'
 #' Note that the method in this function is to remove data leakage from unequal sample
 #' size, but that the leave-one-out method here does not train the identification model
@@ -189,9 +187,7 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' is used the function carries out a new PCA with each resampling
 #' exercise. In both these instances where a fresh PCA is carried
 #' out the function will call on the input value in PClim to determine the number
-#' of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
-#' of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
-#' to FALSE and the resampling procedure will be carried out just on matrix provided.
+#' of PCs to use.
 #'
 #' Note that the method in this function is to remove data leakage from unequal sample
 #' size, but that the leave-one-out method here does not train the identification model
