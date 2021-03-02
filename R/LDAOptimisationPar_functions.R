@@ -35,7 +35,8 @@
 #' @param SampleSize the sample size to be used. If set to NA the resampling exercise will automatically resample groups to the sample size of the smallest group.
 #' @param Verbose logical (either TRUE or FALSE, default set to FALSE) to determine whether to return the identifications of each round of resampling (Verbose=TRUE) or to just return the correct-cross-validation percentages of each resampling exercise (Verbose=FALSE).
 #' @param ShapeGPA logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.
-#' @param Sliding if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}})
+#' @param Sliding if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).
+#' @param SlidingLMindex a vector of the landmark numbers that represent sliding landmarks.
 #' @param SizeShape logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).
 #' @param PClim integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
@@ -51,7 +52,7 @@
 
 
 
-LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10){
+LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10){
   #DiscriminationData=BlackRatGPA$PCscores
   #GroupMembership=Groups
   #EqualIter=100
@@ -94,9 +95,9 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
     } else {
       NewResults$Global.CVP <- rbind(PreviousResults$Global.CVP, ResultList$Global.CVP)
-      NewResults$Grp.CVP <- rbind(PreviousResults$Grp.CVP, ResultList$Grp.CVP)
-      NewResults$True.IDs <- abind::abind(PreviousResults$True.IDs, ResultList$True.IDs, along = 3)
-      NewResults$CV.IDs <- abind::abind(PreviousResults$CV.IDs, ResultList$CV.IDs, along = 3)
+      NewResults$Grp.CVP <- cbind(PreviousResults$Grp.CVP, ResultList$Grp.CVP)
+      NewResults$CV.IDs <- cbind(PreviousResults$CV.IDs, ResultList$CV.IDs)
+      NewResults$True.IDs <- NewResults$True.IDs
 
     }
 
@@ -121,7 +122,7 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
   }
 
 
-  ParEqualIter <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, ParVerbose=Verbose, SizeShape, PClim, SampleSize){
+  ParEqualIter <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, ParVerbose=Verbose, SizeShape, PClim, SampleSize){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
@@ -129,7 +130,7 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
     if (ShapeGPA==TRUE){
       BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
-      BalData <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding)$PCscores)
+      BalData <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)$PCscores)
       LDAres <- MASS::lda(x = BalData[,1:PClim], grouping=BalancingGrps$Newfactors, CV=TRUE)
     } else {
       BalData <- stats::prcomp(x = DiscriminationData[BalancingGrps$IndexedLocations,])
@@ -154,11 +155,13 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
-    ParEqualIter(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, SampleSize=SampleSize)
+    ParEqualIter(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, SampleSize=SampleSize)
   }
 
   parallel::stopCluster(clust)
 
+
+  ParResults$Grp.CVP
 
   if (Verbose==TRUE){
     names(ParResults) <- c('Iteration.Summaries', 'Verbose.Output')
@@ -212,9 +215,10 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' @export
 
 
-LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10, PlotResults=TRUE, CombinePlots=FALSE){
+LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10, PlotResults=TRUE, CombinePlots=FALSE){
 
-  #DiscriminationData = LMDataArray; GroupMembership = Groups; EqualIter=100; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=80; PlotResults=TRUE; CombinePlots=FALSE
+  #DiscriminationData = LMDataArray; GroupMembership = Groups; EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
+  #DiscriminationData = Shape
 
 
   if (ShapeGPA==TRUE & length(dim(DiscriminationData))==2){
@@ -263,8 +267,9 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
     } else {
       NewResults$CVP <- rbind(PreviousResults$CVP, ResultList$CVP)
       NewResults$CV.IDs <- abind::abind(PreviousResults$CV.IDs, ResultList$CV.IDs, along = 3)
-      NewResults$True.IDs <- abind::abind(PreviousResults$True.IDs, ResultList$True.IDs, along = 3)
-      NewResults$PCLoadings <- abind::abind(PreviousResults$PCLoadings, ResultList$PCLoadings, along = 3)
+      NewResults$True.IDs <- NewResults$True.IDs
+      #Needs adding/fixing
+      #NewResults$PCLoadings <- abind::abind(PreviousResults$PCLoadings, ResultList$PCLoadings, along = 3)
 
     }
 
@@ -290,14 +295,14 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
   }
 
 
-  ParEqualIterStepwise <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, ParVerbose=Verbose, SizeShape, PClim, SampleSize){
+  ParEqualIterStepwise <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, ParVerbose=Verbose, SizeShape, PClim, SampleSize){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership
     #GrpMem=Groups
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
 
     if (ShapeGPA==TRUE){
       BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
-      BalRes <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding))
+      BalRes <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex))
       BalData <- BalRes$PCscores
     } else {
       BalRes <- stats::prcomp(x = DiscriminationData[BalancingGrps$IndexedLocations,])
@@ -307,6 +312,8 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
     CVPres <- rep(NA, PClim-1)
     CVPbyGrp <- matrix(NA, nrow = length(unique(BalancingGrps$Newfactors)), ncol = PClim-1, dimnames = list(unique(BalancingGrps$Newfactors), NULL))
     CVIDmat <- matrix(NA, nrow = length(BalancingGrps$Newfactors), ncol = PClim-1, dimnames = list(BalancingGrps$Newfactors, NULL))
+
+    #consider getting rid of this TrueIDmat
     TrueIDmat <-  matrix(NA, nrow = length(BalancingGrps$Newfactors), ncol = PClim-1, dimnames = list(BalancingGrps$Newfactors, NULL))
     for(i in 2:PClim){
       LDAres <- MASS::lda(x = BalData[,1:i], grouping=BalancingGrps$Newfactors, CV=TRUE)
@@ -335,10 +342,10 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
 
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
-    ParEqualIterStepwise(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize)
+    ParEqualIterStepwise(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize)
   }
 
-
+  #dim(ParResults$CVP)
 
   parallel::stopCluster(clust)
 
