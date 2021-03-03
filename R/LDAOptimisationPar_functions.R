@@ -130,7 +130,7 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
     if (ShapeGPA==TRUE){
       BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
-      BalData <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)$PCscores)
+      invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)$PCscores))
       LDAres <- MASS::lda(x = BalData[,1:PClim], grouping=BalancingGrps$Newfactors, CV=TRUE)
     } else {
       BalData <- stats::prcomp(x = DiscriminationData[BalancingGrps$IndexedLocations,])
@@ -302,7 +302,7 @@ LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100,
 
     if (ShapeGPA==TRUE){
       BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
-      BalRes <- suppressMessages(Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex))
+      invisible(utils::capture.output(BalRes <- Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)))
       BalData <- BalRes$PCscores
     } else {
       BalRes <- stats::prcomp(x = DiscriminationData[BalancingGrps$IndexedLocations,])

@@ -12,6 +12,7 @@ LDACVStepwisePar(
   Verbose = FALSE,
   ShapeGPA = FALSE,
   Sliding = NULL,
+  SlidingLMindex = NULL,
   SizeShape = FALSE,
   PClim = 10,
   PlotResults = TRUE,
@@ -31,7 +32,9 @@ LDACVStepwisePar(
 
 \item{ShapeGPA}{logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.}
 
-\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}})}
+\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
+
+\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
 
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
@@ -59,9 +62,7 @@ subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
 is used the function carries out a new PCA with each resampling
 exercise. In both these instances where a fresh PCA is carried
 out the function will call on the input value in PClim to determine the number
-of PCs to use. If a dataset that does not require additional PCA (e.g. a matrix
-of PC scores) is examined then both the arguments ShapeGPA and PCA can be set
-to FALSE and the resampling procedure will be carried out just on matrix provided.
+of PCs to use.
 
 Note that the method in this function is to remove data leakage from unequal sample
 size, but that the leave-one-out method here does not train the identification model

@@ -35,15 +35,15 @@
 #' @export
 
 
-LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10, TestTraining=FALSE){
+LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10, TestTraining=FALSE){
   #DiscriminationData=Scores
   #DiscriminationData=Shape
   #GroupMembership=Groups
-  #EqualIter=100
+  #EqualIter=10
   #PClim=3
   #ShapeGPA=TRUE; Verbose=FALSE; Sliding=NA;
   #SizeShape=FALSE; PCA=FALSE
-  #KFold=4
+  #KFold=2
 
   #DiscriminationData = BlackRatGPA$rotated
   #GroupMembership=Groups
@@ -111,10 +111,11 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
     return(Matrix)
   }
 
-  ParEqualIterKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SizeShape, PClim, KFold, SampleSize, TestTraining){
+  ParEqualIterKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, SizeShape, PClim, KFold, SampleSize, TestTraining){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
     #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding; PClim=PClim; SizeShape = SizeShape
+    #SlidingLMindex=NULL
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
     SampSizeFoo <- min(table(BalancingGrps$Newfactors))
 
@@ -152,10 +153,26 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
       # this is because the shape data needs two steps of transformation and each needs to take into
       # consideration the k folding
       if (ShapeGPA==TRUE){
-        BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
+        invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)))
+        #Spec=29
+        #plot(BalDataShape[,,Spec], type='n', asp=1); text(BalDataShape[,1,Spec], BalDataShape[,2,Spec], labels=1:dim(BalDataShape[,,1])[1], cex=.5)
+        #Sliding=list(c(1:21), c(21:50), c(50:63), c(63:74), c(74:105,1)); SlidingLMindex=c(1:105)[-c(1,21,50,63,74)]
         BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
-        BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
+
+        if (!is.null(Sliding)){
+          PreAlignBal <- suppressMessages(Morpho::align2procSym(BalData, BalDataShape[,,FoldPos]))
+          BalTest <- array(NA, dim = dim(BalDataShape[,,FoldPos]))
+          for (kspec in 1:length(FoldPos)){
+            invisible(utils::capture.output(BalTest[,,kspec] <- Morpho::relaxLM(reference=BalData$mshape, lm=PreAlignBal[,,kspec], outlines = Sliding, SMvector = SlidingLMindex)))
+          }
+
+        } else {
+          BalTest <- suppressMessages(Morpho::align2procSym(BalData, BalDataShape[,,FoldPos]))
+
+        }
+
+
         BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
       } else {
         BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
@@ -196,7 +213,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
-    ParEqualIterKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize, KFold = KFold, TestTraining = TestTraining)
+    ParEqualIterKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize, KFold = KFold, TestTraining = TestTraining)
   }
 
   parallel::stopCluster(clust)
@@ -250,7 +267,7 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 #' @export
 
 
-LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10, PlotResults=TRUE, TestTraining=FALSE){
+LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFold=5, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10, PlotResults=TRUE, TestTraining=FALSE){
 
   #DiscriminationData=BlackRatM1data$LMArray; GroupMembership = SpeciesGrps; PClim = 10; ShapeGPA = TRUE
 
@@ -341,7 +358,7 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
   }
 
 
-  ParEqualIterStepwiseKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, KFold, ParVerbose=Verbose, SizeShape, PClim, TestTraining){
+  ParEqualIterStepwiseKFold <- function(DiscriminationData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, KFold, ParVerbose=Verbose, SizeShape, PClim, TestTraining){
     #DiscriminationData=DiscriminationData; GrpMem=GroupMembership
     #GrpMem=Groups
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
@@ -384,11 +401,34 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
       # this is because the shape data needs two steps of transformation and each needs to take into
       # consideration the k folding
       if (ShapeGPA==TRUE){
-        BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding))
+        invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape[,,-FoldPos], sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)))
         BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
-        BalTest <- Morpho::align2procSym(BalData, BalDataShape[,,FoldPos])
+
+        if (!is.null(Sliding)){
+          PreAlignBal <- suppressMessages(Morpho::align2procSym(BalData, BalDataShape[,,FoldPos]))
+          BalTest <- array(NA, dim = dim(BalDataShape[,,FoldPos]))
+          for (kspec in 1:length(FoldPos)){
+            invisible(utils::capture.output(BalTest[,,kspec] <- Morpho::relaxLM(reference=BalData$mshape, lm=PreAlignBal[,,kspec], outlines = Sliding, SMvector = SlidingLMindex)))
+          }
+
+        } else {
+          BalTest <- suppressMessages(Morpho::align2procSym(BalData, BalDataShape[,,FoldPos]))
+
+        }
+        #dist(rbind(c(t(BalTest[,,1])),c(t(BalData$mshape))))
+        #dist(rbind(c(t(BalTest2[,,1])),c(t(BalData$mshape))))
+        #dist(rbind(c(t(BalDataShape[,,FoldPos[1]])),c(t(BalData$mshape))))
+        #plot(BalTest[,,1], asp=1)
+        #points(BalDataShape[,1,FoldPos[1]], BalDataShape[,2,FoldPos[1]], col='red')
+        #points(PreAlignBal[,1,1], PreAlignBal[,2,1], col='red')
+        #points(BalData$mshape[,1], BalData$mshape[,2], col='blue')
+
+
+
         BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
+        #plot(BalPCA$x)
+        #points(BalTestPCA[,1], BalTestPCA[,2], col='red')
       } else {
         BalPCA <- stats::prcomp(x = BalData[-FoldPos,])$x
 
@@ -440,9 +480,10 @@ LDACVManyStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=
   clust <- parallel::makeCluster(cores[1]-1)
   doParallel::registerDoParallel(clust)
 
+  #NEED TIME TRIAL
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput, .packages = 'abind') %dopar% {
-    ParEqualIterStepwiseKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, KFold=KFold, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, TestTraining=TestTraining)
+    ParEqualIterStepwiseKFold(DiscriminationData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, KFold=KFold, ParVerbose=Verbose, PClim=PClim, SizeShape = SizeShape, TestTraining=TestTraining)
   }
 
 

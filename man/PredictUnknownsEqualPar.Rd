@@ -12,6 +12,7 @@ PredictUnknownsEqualPar(
   SampleSize = NA,
   ShapeGPA = FALSE,
   Sliding = NULL,
+  SlidingLMindex = NULL,
   SizeShape = FALSE,
   PClim = 10
 )
@@ -29,7 +30,9 @@ PredictUnknownsEqualPar(
 
 \item{ShapeGPA}{logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.}
 
-\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}})}
+\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
+
+\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
 
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 

@@ -42,7 +42,7 @@
 #' @export
 
 
-PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SizeShape=FALSE, PClim=10){
+PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10){
   #DiscriminationData=Scores
   #DiscriminationData=Shape
   #GroupMembership=Groups
@@ -52,10 +52,10 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   #SizeShape=FALSE; PCA=FALSE
   #KFold=4
 
-  #TrainingData = BlackRatGPA$rotated
-  #UnknownData = BlackRatGPA$rotated[,,1:4]
-  #GroupMembership=Groups
-  #EqualIter=1000
+  #TrainingData = Shape[,,-c(1:2)]#BlackRatGPA$rotated
+  #UnknownData = Shape[,,1:2]#BlackRatGPA$rotated[,,1:4]
+  #GroupMembership=Groups[-c(1:2)]
+  #EqualIter=100
   #PClim=3; ShapeGPA = TRUE; KFold = 5
 
 
@@ -125,7 +125,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
     return(Matrix)
   }
 
-  ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SizeShape, PClim, SampleSize){
+  ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, SizeShape, PClim, SampleSize){
     #DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
     #GrpMem=Groups; PClim=3; SampleSize=NA
     #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding;  PClim=PClim; SizeShape = SizeShape
@@ -139,10 +139,24 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
     if (ShapeGPA==TRUE){
       BalDataShape <- TrainingData[,,BalancingGrps$IndexedLocations]
-      BalData <- suppressMessages(Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = Sliding))
+      invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex)))
       BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
       BalTest <- Morpho::align2procSym(BalData, UnknownData)
+
+      if (!is.null(Sliding)){
+        BalTest <- UnknownData
+        for (kspec in 1:dim(UnknownData)[3]){
+          invisible(utils::capture.output(BalTest[,,kspec] <- Morpho::relaxLM(reference=BalData$mshape, lm=UnknownData[,,kspec], outlines = Sliding, SMvector = SlidingLMindex)))
+        }
+
+      } else {
+        BalTest <- suppressMessages(Morpho::align2procSym(BalData, UnknownData))
+
+      }
+
+
+
       BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
     } else {
       BalData <- TrainingData[BalancingGrps$IndexedLocations,]
@@ -167,11 +181,10 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
   a <- 1
   ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
-    ParEqualIterPredict(TrainingData, UnknownData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize)
+    ParEqualIterPredict(TrainingData, UnknownData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize)
   }
 
   parallel::stopCluster(clust)
-
 
   return(ParResults)
 }
