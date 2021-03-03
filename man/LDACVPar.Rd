@@ -12,6 +12,7 @@ LDACVPar(
   Verbose = FALSE,
   ShapeGPA = FALSE,
   Sliding = NULL,
+  Bending = TRUE,
   SlidingLMindex = NULL,
   SizeShape = FALSE,
   PClim = 10
@@ -31,6 +32,8 @@ LDACVPar(
 \item{ShapeGPA}{logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.}
 
 \item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
+
+\item{Bending}{default set to TRUE. This is passed to the \code{Morpho} package functions to determine if minimum bending energy (TRUE) or minimum procrustes distance (set to FALSE) is used for sliding the landmarks.}
 
 \item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
 

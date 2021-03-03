@@ -14,6 +14,7 @@ LDACVManyStepwisePar(
   ShapeGPA = FALSE,
   Sliding = NULL,
   SlidingLMindex = NULL,
+  Bending = TRUE,
   SizeShape = FALSE,
   PClim = 10,
   PlotResults = TRUE,
@@ -38,6 +39,8 @@ LDACVManyStepwisePar(
 \item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
 
 \item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
+
+\item{Bending}{default set to TRUE. This is passed to the \code{Morpho} package functions to determine if minimum bending energy (TRUE) or minimum procrustes distance (set to FALSE) is used for sliding the landmarks.}
 
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
