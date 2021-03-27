@@ -54,12 +54,13 @@
 
 
 LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, Bending=TRUE, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10){
-  #DiscriminationData=BlackRatGPA$PCscores
+  #DiscriminationData=Shape#BlackRatGPA$PCscores
   #GroupMembership=Groups
   #EqualIter=100
   #PClim=3
-  #ShapeGPA=TRUE; Verbose=FALSE; Sliding=NA;
-  #SizeShape=FALSE; PCA=FALSE
+  #ShapeGPA=TRUE; Verbose=TRUE; Sliding=NULL;
+  #SizeShape=FALSE
+  #SampleSize=NA; Sliding=NULL; Bending=TRUE; SlidingLMindex=NULL; SizeShape=FALSE; PClim=10
 
   #DiscriminationData = M1GPA$PCscores[RemPos,1:PCdim]
   #GroupMembership = Grouping[RemPos]
@@ -166,8 +167,8 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
   if (Verbose==TRUE){
     names(ParResults) <- c('Iteration.Summaries', 'Verbose.Output')
-    graphics::hist(ParResults$Iteration.Summaries)
-    return(ParResults, main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
+    graphics::hist(ParResults$Iteration.Summaries, main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
+    return(ParResults)
   } else {
     graphics::hist(ParResults[[1]], main= paste('Correct cross-validation % for', PClim, 'PCs', sep = ' '), xlab = 'CCV%')
     return(ParResults[[1]])
