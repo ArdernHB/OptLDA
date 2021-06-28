@@ -43,8 +43,15 @@
 
 
 PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, Bending=TRUE, SizeShape=FALSE, PClim=10){
+
+  #TestData <- readRDS('C:/Users/Arder/Desktop/Collaborations/Loukas Koungoulos/Mungo Dingo Project/LakeMongo/MungoDingoData.R')
+  #DiscriminationData = TestData$Data[,,-1]; GroupMembership = TestData$Info$Class[-1];
+  #EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
+
+
+
   #DiscriminationData=Scores
-  #DiscriminationData=Shape
+  #DiscriminationData=TestData$Data[,,-1]
   #GroupMembership=Groups
   #EqualIter=100
   #PClim=3
@@ -60,6 +67,8 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
 
   #TrainingData = CompDatasort$ShapeData[,,ArchRem]; UnknownData = CompDatasort$ShapeData[,,-ArchRem]; GroupMembership= CompDatasort$info$species[ArchRem]
+
+  #TrainingData = TestData$Data[,,-1]; UnknownData = TestData$Data[,,1]; GroupMembership= TestData$Info$Class[-1]
   #EqualIter=100; SampleSize=NA; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=16
 
   if (ShapeGPA==TRUE & length(dim(TrainingData))==2){
@@ -158,8 +167,14 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
       }
 
 
+      if (length(dim(BalTest))==2){
+        BalTestMat <- matrix(c(t(BalTest)), nrow = 1, ncol = length(BalTest))
+      } else {
+        BalTestMat <- Array2Mat(BalTest)
+      }
 
-      BalTestPCA <- stats::predict(BalPCA, newdata = Array2Mat(BalTest))
+
+      BalTestPCA <- stats::predict(BalPCA, newdata = BalTestMat)
     } else {
       BalData <- TrainingData[BalancingGrps$IndexedLocations,]
       BalPCA <- stats::prcomp(x = BalData)
