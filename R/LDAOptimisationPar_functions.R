@@ -35,8 +35,8 @@
 #' @param SampleSize the sample size to be used. If set to NA the resampling exercise will automatically resample groups to the sample size of the smallest group.
 #' @param Verbose logical (either TRUE or FALSE, default set to FALSE) to determine whether to return the identifications of each round of resampling (Verbose=TRUE) or to just return the correct-cross-validation percentages of each resampling exercise (Verbose=FALSE).
 #' @param ShapeGPA logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.
-#' @param Sliding if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).
-#' @param SlidingLMindex a vector of the landmark numbers that represent sliding landmarks.
+#' @param Sliding if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see argument description for outlines in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).
+#' @param SlidingLMindex a vector of the landmark numbers that represent sliding landmarks (see argument description for SMvector in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).
 #' @param Bending default set to TRUE. This is passed to the \code{Morpho} package functions to determine if minimum bending energy (TRUE) or minimum procrustes distance (set to FALSE) is used for sliding the landmarks.
 #' @param SizeShape logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).
 #' @param PClim integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.
@@ -218,9 +218,12 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
 
 LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, Bending=TRUE, SizeShape=FALSE, PClim=10, PlotResults=TRUE, CombinePlots=FALSE){
+  #TestData <- readRDS('C:/Users/Arder/Desktop/Collaborations/Loukas Koungoulos/Mungo Dingo Project/LakeMongo/MungoDingoData.R')
+  #DiscriminationData = TestData$Data[,,-1]; GroupMembership = TestData$Info$Class[-1]; EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
 
   #DiscriminationData = LMDataArray; GroupMembership = Groups; EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
   #DiscriminationData = Shape
+  #DiscriminationData = SelectPigData$LMs; GroupMembership=SelectPigData$Info$Group; EqualIter=10; SampleSize=NA; Verbose=TRUE; ShapeGPA=FALSE; Sliding=SSLMsList; SlidingLMindex=SSLMsIndex; Bending=TRUE; SizeShape=FALSE; PClim=10; PlotResults=TRUE; CombinePlots=FALSE
 
 
   if (ShapeGPA==TRUE & length(dim(DiscriminationData))==2){
