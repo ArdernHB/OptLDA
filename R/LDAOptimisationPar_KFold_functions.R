@@ -12,7 +12,8 @@
 #' \code{LDACVManyStepwisePar} for stepwise testing of each set of consecutive PCs.
 #'
 #' The function is primarily for use with resampling unequal groups to equal sample
-#' size a set number of times. This process is carried out with parallel processing.
+#' size a set number of times. This follows Evin et al 2013, but the addition of
+#' K-fold resampling. This process is carried out with parallel processing.
 #' If shape data is used the function offers the option to carry out a new GPA and
 #' subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
 #' is used the function carries out a new PCA with each resampling
@@ -25,6 +26,9 @@
 #' @inheritParams LDACVStepwisePar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'
+#' @section Citations:
+#'
+#' Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
 #'
 #' @author Ardern Hulme-Beaman
 #' @import MASS
@@ -238,13 +242,14 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 #' Stepwise LDA correct cross-validation with equal sample size using parallel processing
 #'
 #' This function takes a matrix of variables of known group membership and returns
-#' the results of a leave-one-out correct cross validation identification for each
+#' the results of a leave K out correct cross validation identification for each
 #' specimen to provide a correct cross-validation percentage. This function is for
 #' for stepwise testing of each set of consecutive PCs with resampling to equal sample
-#' size at each incremental increase.
+#' size at each incremental increase, following Baylac and Friess 2005.
 #'
 #' The function is primarily for use with resampling unequal groups to equal sample
-#' size a set number of times. This process is carried out with parrallel processing.
+#' size a set number of times. This follows Evin et al 2013, but the addition of
+#' K-fold resampling. This process is carried out with parallel processing.
 #' If shape data is used the function offers the option to carry out a new GPA and
 #' subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
 #' is used the function offers the option to carry out a new PCA with each resampling
@@ -255,9 +260,12 @@ LDACVManyPar <- function(DiscriminationData, GroupMembership, EqualIter=100, KFo
 #' @inheritParams LDACVManyPar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'
+#' @section Citations:
 #'
-#' @keywords shape distances
-#' @keywords Geometric morphometric distances
+#' Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
+#'
+#' Baylac and Friess, 2005 Fourier descriptors, procrustes superimposition and data dimensionality: an example of cranial shape analysis in modern human populations D.E. Slice (Ed.), Modern Morphometrics in Physical Anthropology, Springer-Verlag, New York (2005), pp. 145-165
+#'
 #' @author Ardern Hulme-Beaman
 #' @import MASS
 #' @import Morpho

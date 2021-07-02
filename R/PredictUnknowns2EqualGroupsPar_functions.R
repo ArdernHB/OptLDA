@@ -10,14 +10,17 @@
 #' then projected into the same PCA space. This ensures there is no data leakage
 #' into the identification model from either the unequal reference group sample
 #' sizes or from the unknown specimens. In other words, if the reference groups
-#' are unequal then the larger groups will dispropotionately influence the PCA
+#' are unequal then the larger groups will disproportionately influence the PCA
 #' upon which later predictive models will act on, this is known as data leakage
-#' and is avoided using this function.
+#' and is avoided using this function. It follows similar method to those proposed
+#' by Evin et al. 2015 by resampling to equal sample size for prediction, however
+#' the PredictUnknownsEqualPar function does not allow for selections of subsets
+#' of results from the resampling exercise.
 #'
 #' The function can also be applied to shape data in which case it expects an
 #' array of data with landmarks as rows, dimensions as columns and specimens as
 #' sliced (for shape data set ShapeGPA=TRUE). In the case of shape data, both a GPA
-#' and a PCA are carried out for each resampling excercise to equal sample sizes,
+#' and a PCA are carried out for each resampling exercise to equal sample sizes,
 #' unknown specimens are then projected into the shape space defined by that equal
 #' sample size and then those rotated specimens a projected into the PCA space.
 #'
@@ -30,6 +33,12 @@
 #' @param UnknownData as for Training data but with the unknown data.
 #' @inheritParams LDACVStepwisePar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
+#'
+#' @section Citations:
+#'
+#' Evin Allowen, Flink Linus Girdland, Bălăşescu Adrian, Popovici Dragomir, Andreescu Radian, Bailey Douglas, Mirea Pavel, Lazăr Cătălin, Boroneanţ Adina, Bonsall Clive, Vidarsdottir Una Strand,
+#' Brehard Stéphanie, Tresset Anne, Cucchi Thomas, Larson Greger and Dobney Keith 2015Unravelling the complexity of domestication: a case study using morphometrics and ancient DNA analyses of archaeological pigs from RomaniaPhil.
+#' Trans. R. Soc. B 370: 20130616
 #'
 #'
 #' @author Ardern Hulme-Beaman

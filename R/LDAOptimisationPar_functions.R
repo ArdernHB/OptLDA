@@ -13,11 +13,11 @@
 #' consecutive PCs.
 #'
 #' The function is primarily for use with resampling unequal groups to equal sample
-#' size a set number of times. This process is carried out with parrallel processing.
-#' If shape data is used the function offers the option to carry out a new GPA and
-#' subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-#' is used the function carries out a new PCA with each resampling
-#' exercise. In both these instances where a fresh PCA is carried
+#' size a set number of times, following Evin et al 2013. This process is carried
+#' out with parrallel processing. If shape data is used the function offers the
+#' option to carry out a new GPA and subsequent PCA for each resampling exercise
+#' (set ShapeGPA=TRUE). If raw data is used the function carries out a new PCA with
+#' each resampling exercise. In both these instances where a fresh PCA is carried
 #' out the function will call on the input value in PClim to determine the number
 #' of PCs to use.
 #'
@@ -42,6 +42,9 @@
 #' @param PClim integer determining the number of PCs to be used in the case that ShapeGPA or PCA are set to TRUE. Default is arbitrarily set to 10.
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'
+#' @section Citations:
+#'
+#' Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
 #'
 #' @author Ardern Hulme-Beaman
 #' @import MASS
@@ -183,14 +186,14 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' the results of a leave-one-out correct cross validation identification for each
 #' specimen to provide a correct cross-validation percentage. This function is for
 #' for stepwise testing of each set of consecutive PCs with resampling to equal sample
-#' size at each incremental increase.
+#' size at each incremental increase following Baylac and Friess 2005.
 #'
 #' The function is primarily for use with resampling unequal groups to equal sample
-#' size a set number of times. This process is carried out with parallel processing.
-#' If shape data is used the function offers the option to carry out a new GPA and
-#' subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-#' is used the function carries out a new PCA with each resampling
-#' exercise. In both these instances where a fresh PCA is carried
+#' size a set number of times, following Evin et al. 2013. This process is carried
+#' out with parallel processing. If shape data is used the function offers the
+#' option to carry out a new GPA and subsequent PCA for each resampling exercise
+#' (set ShapeGPA=TRUE). If raw data is used the function carries out a new PCA
+#' with each resampling exercise. In both these instances where a fresh PCA is carried
 #' out the function will call on the input value in PClim to determine the number
 #' of PCs to use.
 #'
@@ -206,6 +209,12 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 #' @param CombinePlots logical set to FALSE to indicate whether the results of this analysis should be plotted on a previous result that's currently open (e.g. for randomised analyses).
 #' @inheritParams LDACVPar
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
+#'
+#' @section Citations:
+#'
+#' Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
+#'
+#' Baylac and Friess, 2005 Fourier descriptors, procrustes superimposition and data dimensionality: an example of cranial shape analysis in modern human populations D.E. Slice (Ed.), Modern Morphometrics in Physical Anthropology, Springer-Verlag, New York (2005), pp. 145-165
 #'
 #'
 #' @author Ardern Hulme-Beaman
