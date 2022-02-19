@@ -37,7 +37,7 @@
 #' @section Citations:
 #'
 #' Evin Allowen, Flink Linus Girdland, Bălăşescu Adrian, Popovici Dragomir, Andreescu Radian, Bailey Douglas, Mirea Pavel, Lazăr Cătălin, Boroneanţ Adina, Bonsall Clive, Vidarsdottir Una Strand,
-#' Brehard Stéphanie, Tresset Anne, Cucchi Thomas, Larson Greger and Dobney Keith 2015Unravelling the complexity of domestication: a case study using morphometrics and ancient DNA analyses of archaeological pigs from RomaniaPhil.
+#' Brehard Stéphanie, Tresset Anne, Cucchi Thomas, Larson Greger and Dobney Keith 2015. Unravelling the complexity of domestication: a case study using morphometrics and ancient DNA analyses of archaeological pigs from Romania. Phil.
 #' Trans. R. Soc. B 370: 20130616
 #'
 #'
