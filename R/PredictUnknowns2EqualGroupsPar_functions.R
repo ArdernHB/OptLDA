@@ -56,6 +56,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
 
 
+
   if (ShapeGPA==TRUE & length(dim(TrainingData))==2){
     stop('TrainingData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
   }
@@ -118,17 +119,16 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   }
 
   ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, Bending, SizeShape, PClim, SampleSize){
-    # DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
-    #
-    # PClim=3; SampleSize=NA
-    # GrpMem=Groups;
-    #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding;  PClim=PClim; SizeShape = SizeShape
+    #GrpMem=GroupMembership
+
+
+
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
 
     #As we're cbinding the new factors with the folding, the folding will be
     #duplicated equally until it matches the length of the factors
     #these then ensures that the now balanced sample sizes are subjected to the
-    #K-fold proceedure equally
+    #K-fold procedure equally
     NewFactFoldIndex <- BalancingGrps$Newfactors
 
     if (ShapeGPA==TRUE){
@@ -146,7 +146,8 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
       #BalTest <- Morpho::align2procSym(BalData, UnknownData)
 
       if (!is.null(Sliding)){
-        PreAlignBal <- suppressMessages(Morpho::align2procSym(BalData, UnknownData))
+        invisible(utils::capture.output(BalDataPrep <- Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = NULL, SMvector = NULL, bending = Bending)))
+        PreAlignBal <- suppressMessages(Morpho::align2procSym(x = BalDataPrep, newdata = UnknownData))
         dimnames(PreAlignBal) <- dimnames(UnknownData)
         BalTestSlid <- array(NA, dim = dim(UnknownData), dimnames = dimnames(UnknownData))
         for (kspec in 1:dim(PreAlignBal)[3]){
@@ -166,7 +167,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
 
         if (SizeShape){
-          BalTestMat <- matrix(c(log(Morpho::cSize(UnknownData)),t(BalTest)), nrow = 1, ncol = length(BalTest)+1)
+          BalTestMat <- matrix(c(log(apply(UnknownData, MARGIN = 3, FUN = Morpho::cSize)),t(BalTest)), nrow = 1, ncol = length(BalTest)+1)
         } else {
           BalTestMat <- matrix(c(t(BalTest)), nrow = 1, ncol = length(BalTest))
         }
@@ -174,7 +175,7 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
       } else {
 
         if (SizeShape){
-          BalTestMat <- cbind(log(Morpho::cSize(UnknownData)), Array2Mat(BalTest))
+          BalTestMat <- cbind(log(apply(UnknownData, MARGIN = 3, FUN = Morpho::cSize)), Array2Mat(BalTest))
         } else {
           BalTestMat <- Array2Mat(BalTest)
         }
