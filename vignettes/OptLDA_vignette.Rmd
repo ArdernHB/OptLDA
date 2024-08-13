@@ -60,10 +60,10 @@ The CCV% using a leave-one-out method is around the level percentage of individu
 
 ``` {r Calculating the leave one out correct cross validation for simulated groups resampled to equal sample size}
 
-Rat3PCsLDABalanced <- LDACVPar(DiscriminationData = BlackRatGPA$rotated,
-                               GroupMembership=Groups,
-                               EqualIter=2000,
-                               PClim=3,ShapeGPA = TRUE)
+#Rat3PCsLDABalanced <- LDACVPar(DiscriminationData = BlackRatGPA$rotated,
+ #                              GroupMembership=Groups,
+  #                             EqualIter=2000,
+   #                            PClim=3,ShapeGPA = TRUE)
 
 ```
 
@@ -74,10 +74,10 @@ An alternative approach is to leave out many (known as 'leave-p-out'), and an im
 
 ``` {r Centroid and variance of leave one out correct cross validation for simulated groups resampled to equal sample size}
 
-print(paste('mean=', mean(Rat3PCsLDABalanced),
-      ', median=', median(Rat3PCsLDABalanced),
-      ', 25th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.25),
-      ', 75th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.75), sep = ''))
+#print(paste('mean=', mean(Rat3PCsLDABalanced),
+ #     ', median=', median(Rat3PCsLDABalanced),
+  #    ', 25th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.25),
+   #   ', 75th percentile=', quantile(Rat3PCsLDABalanced, probs = 0.75), sep = ''))
 ```
 
 We can achieve a leave out many CCV by a number of different methods, in this case because we are both resampling to equal sample size and carrying out a leave out many CCV, we are using a multi layered approach. In other words we are subsetting out data so the sample sizes of our groups are equal (this is then the first layer) and then we are partitioning our data into equal training and test samples and assessing the CCV of each partition iteratively (this is the second layer). The partitioning of our data into training and test samples can be done using a 'folding' approach (known as 'k-fold cross-validation'). A folding approach randomly splits the data into 'folds' of approximately equal size (e.g. in a sample of 100 specimens if it is folded 4 times you will have 4 groups of 25 specimens each, if folded 3 times you will have 2 groups of 33 and 1 of 34). The number of folds is defined by the user and is known as 'k' (hence being called 'k-fold cross-validation'). Instead of leaving one specimen out as in the leave-one-out method, this cross validation approach leaves out one of the folds and tries to reassign that to the correct group. Importantly to note, if k is equal to the number of specimens in a sample then effectively this is a leave-one-out approach; a leave-one-out approach is therefore a special kind of k-fold CCV.
@@ -89,10 +89,10 @@ In our case, with unequal sample size, we are effectively doing a combination of
 
 ``` {r Calculating the K-Fold correct cross validation }
 
-Rat3PCsLDABalancedKfold <- LDACVManyPar(DiscriminationData = BlackRatGPA$rotated,
-                                        GroupMembership=Groups,
-                                        EqualIter=2000,
-                                        PClim=3,ShapeGPA = TRUE, KFold = 10)
+#Rat3PCsLDABalancedKfold <- LDACVManyPar(DiscriminationData = BlackRatGPA$rotated,
+ #                                       GroupMembership=Groups,
+  #                                      EqualIter=2000,
+   #                                     PClim=3,ShapeGPA = TRUE, KFold = 10)
 
 ```
 
@@ -103,12 +103,12 @@ The output of the LDACVManyPar is a matrix with the rows for each resampling to 
 
 ``` {r Centroid and variance of k-fold correct cross validation for simulated groups resampled to equal sample size}
 
-Rat3PCsLDABalancedKfoldSummary <- apply(Rat3PCsLDABalancedKfold, 1, median)
+#Rat3PCsLDABalancedKfoldSummary <- apply(Rat3PCsLDABalancedKfold, 1, median)
 
-print(paste('mean=', mean(Rat3PCsLDABalancedKfoldSummary),
-      ', median=', median(Rat3PCsLDABalancedKfoldSummary),
-      ', 25th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.25),
-      ', 75th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.75), sep = ''))
+#print(paste('mean=', mean(Rat3PCsLDABalancedKfoldSummary),
+ #     ', median=', median(Rat3PCsLDABalancedKfoldSummary),
+  #    ', 25th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.25),
+   #   ', 75th percentile=', quantile(Rat3PCsLDABalancedKfoldSummary, probs = 0.75), sep = ''))
 
 ```
 This package therefore provides simple tools for correctly assessing cross validation procedures while avoiding problems of data leakage. (Note that currently the package does not support sliding landmarks in each resampling exercise, therefore sliding landmarks will still have data leakage as they will be influenced by unequal sample size and also the test/unknown dataset).

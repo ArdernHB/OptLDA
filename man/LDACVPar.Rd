@@ -31,11 +31,11 @@ LDACVPar(
 
 \item{ShapeGPA}{logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.}
 
-\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
+\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see argument description for outlines in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).}
 
 \item{Bending}{default set to TRUE. This is passed to the \code{Morpho} package functions to determine if minimum bending energy (TRUE) or minimum procrustes distance (set to FALSE) is used for sliding the landmarks.}
 
-\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
+\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks (see argument description for SMvector in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).}
 
 \item{SizeShape}{logical (either TRUE or FALSE, default set to FALSE). If ShapeGPA is TRUE and you wish to analyses form (i.e. shape+log size) then this argument will be passed to the \code{\link[Morpho]{procSym}} and the balanced LDA will be applied to form PCs (see function description of \code{\link[Morpho]{procSym}}).}
 
@@ -54,11 +54,11 @@ consecutive PCs.
 }
 \details{
 The function is primarily for use with resampling unequal groups to equal sample
-size a set number of times. This process is carried out with parrallel processing.
-If shape data is used the function offers the option to carry out a new GPA and
-subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-is used the function carries out a new PCA with each resampling
-exercise. In both these instances where a fresh PCA is carried
+size a set number of times, following Evin et al 2013. This process is carried
+out with parrallel processing. If shape data is used the function offers the
+option to carry out a new GPA and subsequent PCA for each resampling exercise
+(set ShapeGPA=TRUE). If raw data is used the function carries out a new PCA with
+each resampling exercise. In both these instances where a fresh PCA is carried
 out the function will call on the input value in PClim to determine the number
 of PCs to use.
 
@@ -70,6 +70,12 @@ be unimportant. However, if this is a concern please use the k-fold method in
 \code{LDACVManyPar} and \code{LDACVManyStepwisePar} and set k to the sample size of
 the smallest sample size.
 }
+\section{Citations}{
+
+
+Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
+}
+
 \author{
 Ardern Hulme-Beaman
 }

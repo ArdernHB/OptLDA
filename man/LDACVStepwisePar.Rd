@@ -33,9 +33,9 @@ LDACVStepwisePar(
 
 \item{ShapeGPA}{logical (either TRUE or FALSE, default set to FALSE) to indicate whether the data is shape data and if so each subset of individuals from the resampling procedure will be processed through a Generalised Procrustes Analysis (GPA) and subsequent Principal Component Analysis (PCA) using the \code{\link[Morpho]{procSym}} function in the package \code{Morpho}.}
 
-\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see function description of \code{\link[Morpho]{procSym}}).}
+\item{Sliding}{if ShapeGPA is TRUE and the shape data has sliding landmarks then a list should be provided here with vectors of landmarks to be slid (see argument description for outlines in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).}
 
-\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks.}
+\item{SlidingLMindex}{a vector of the landmark numbers that represent sliding landmarks (see argument description for SMvector in the \code{\link[Morpho]{procSym}} function of the \code{\link[Morpho]{Morpho}} package).}
 
 \item{Bending}{default set to TRUE. This is passed to the \code{Morpho} package functions to determine if minimum bending energy (TRUE) or minimum procrustes distance (set to FALSE) is used for sliding the landmarks.}
 
@@ -55,15 +55,15 @@ This function takes a matrix of variables of known group membership and returns
 the results of a leave-one-out correct cross validation identification for each
 specimen to provide a correct cross-validation percentage. This function is for
 for stepwise testing of each set of consecutive PCs with resampling to equal sample
-size at each incremental increase.
+size at each incremental increase following Baylac and Friess 2005.
 }
 \details{
 The function is primarily for use with resampling unequal groups to equal sample
-size a set number of times. This process is carried out with parallel processing.
-If shape data is used the function offers the option to carry out a new GPA and
-subsequent PCA for each resampling exercise (set ShapeGPA=TRUE). If raw data
-is used the function carries out a new PCA with each resampling
-exercise. In both these instances where a fresh PCA is carried
+size a set number of times, following Evin et al. 2013. This process is carried
+out with parallel processing. If shape data is used the function offers the
+option to carry out a new GPA and subsequent PCA for each resampling exercise
+(set ShapeGPA=TRUE). If raw data is used the function carries out a new PCA
+with each resampling exercise. In both these instances where a fresh PCA is carried
 out the function will call on the input value in PClim to determine the number
 of PCs to use.
 
@@ -75,6 +75,14 @@ be unimportant. However, if this is a concern please use the k-fold method in
 \code{LDACVManyPar} and \code{LDACVManyStepwisePar} and set k to the sample size of
 the smallest sample size.
 }
+\section{Citations}{
+
+
+Evin, A., Cucchi, T., Cardini, A., Vidarsdottir, U.S., Larson, G. and Dobney, K., 2013. The long and winding road: identifying pig domestication through molar size and shape. Journal of Archaeological Science, 40(1), pp.735-743.
+
+Baylac and Friess, 2005 Fourier descriptors, procrustes superimposition and data dimensionality: an example of cranial shape analysis in modern human populations D.E. Slice (Ed.), Modern Morphometrics in Physical Anthropology, Springer-Verlag, New York (2005), pp. 145-165
+}
+
 \author{
 Ardern Hulme-Beaman
 }
