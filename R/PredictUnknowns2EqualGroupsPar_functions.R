@@ -48,16 +48,11 @@
 #' @import parallel
 #' @import foreach
 #' @import abind
+#' @import doRNG
 #' @export
 
 
 PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, Bending=TRUE, SizeShape=FALSE, PClim=10){
-
-  #TestData <- readRDS('C:/Users/Arder/Desktop/Collaborations/Loukas Koungoulos/Mungo Dingo Project/LakeMongo/MungoDingoData.R')
-  #DiscriminationData = TestData$Data[,,-1]; GroupMembership = TestData$Info$Class[-1];
-  #EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
-
-
 
   #DiscriminationData=Scores
   #DiscriminationData=TestData$Data[,,-1]
@@ -79,6 +74,19 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
   #TrainingData = TestData$Data[,,-1]; UnknownData = TestData$Data[,,1]; GroupMembership= TestData$Info$Class[-1]
   #EqualIter=100; SampleSize=NA; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=16
+
+#
+#   TrainingData = dingo_data_load$ScaledConfigs[,,-arch_spp_index]
+#   UnknownData = dingo_data_load$ScaledConfigs[,,arch_spp_index]
+#   GroupMembership = dingo_data_load$info$Sp_grp_2[-arch_spp_index]
+#   EqualIter = predict_iters
+#   SampleSize = NA
+#   ShapeGPA = TRUE
+#   Sliding = NULL
+#   SlidingLMindex = NULL
+#   Bending = TRUE
+#   SizeShape = TRUE
+#   PClim = i
 
   if (ShapeGPA==TRUE & length(dim(TrainingData))==2){
     stop('TrainingData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
@@ -117,8 +125,6 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
 
   BalancedGrps <- function(GroupMembership, GroupSize=SampleSize){
-    #DiscriminationData=PairwiseShapePCAmat
-    #GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
       minSampSize <- min(table(as.character(GroupMembership)))
@@ -144,8 +150,10 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   }
 
   ParEqualIterPredict <- function(TrainingData, UnknownData, GrpMem, ShapeGPA, Sliding, SlidingLMindex, Bending, SizeShape, PClim, SampleSize){
-    #DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
-    #GrpMem=Groups; PClim=3; SampleSize=NA
+    # DiscriminationData=TrainingData; GrpMem=GroupMembership; ParTieBreaker='Report'; ParVerbose=FALSE
+    #
+    # PClim=3; SampleSize=NA
+    # GrpMem=Groups;
     #DiscriminationData; GrpMem=GroupMembership; ShapeGPA=ShapeGPA; Sliding=Sliding;  PClim=PClim; SizeShape = SizeShape
     BalancingGrps <- BalancedGrps(GrpMem, SampleSize)
 
@@ -157,29 +165,52 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
 
     if (ShapeGPA==TRUE){
       BalDataShape <- TrainingData[,,BalancingGrps$IndexedLocations]
-      invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex, bending = Bending)))
-      BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
 
-      BalTest <- Morpho::align2procSym(BalData, UnknownData)
+      invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape[,,], sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex, bending = Bending)))
+
+      if (SizeShape){
+        BalPCA <- stats::prcomp(cbind(log(BalData$size), Array2Mat(BalData$orpdata)))
+      } else {
+        BalPCA <- stats::prcomp(Array2Mat(BalData$orpdata))
+      }
+
+
+      #BalTest <- Morpho::align2procSym(BalData, UnknownData)
 
       if (!is.null(Sliding)){
         PreAlignBal <- suppressMessages(Morpho::align2procSym(BalData, UnknownData))
-        BalTestSlid <- array(NA, dim = dim(UnknownData))
+        dimnames(PreAlignBal) <- dimnames(UnknownData)
+        BalTestSlid <- array(NA, dim = dim(UnknownData), dimnames = dimnames(UnknownData))
         for (kspec in 1:dim(PreAlignBal)[3]){
           invisible(utils::capture.output(BalTestSlid[,,kspec] <- Morpho::relaxLM(reference=BalData$mshape, lm=PreAlignBal[,,kspec], outlines = Sliding, SMvector = SlidingLMindex, bending=Bending)))
         }
 
         BalTest <- suppressMessages(Morpho::align2procSym(BalData, BalTestSlid))
+        dimnames(BalTest) <- dimnames(BalTestSlid)
       } else {
         BalTest <- suppressMessages(Morpho::align2procSym(BalData, UnknownData))
+        dimnames(BalTest) <- dimnames(UnknownData)
 
       }
 
 
       if (length(dim(BalTest))==2){
-        BalTestMat <- matrix(c(t(BalTest)), nrow = 1, ncol = length(BalTest))
+
+
+        if (SizeShape){
+          BalTestMat <- matrix(c(log(Morpho::cSize(UnknownData)),t(BalTest)), nrow = 1, ncol = length(BalTest)+1)
+        } else {
+          BalTestMat <- matrix(c(t(BalTest)), nrow = 1, ncol = length(BalTest))
+        }
+
       } else {
-        BalTestMat <- Array2Mat(BalTest)
+
+        if (SizeShape){
+          BalTestMat <- cbind(log(Morpho::cSize(UnknownData)), Array2Mat(BalTest))
+        } else {
+          BalTestMat <- Array2Mat(BalTest)
+        }
+
       }
 
 
@@ -205,8 +236,10 @@ PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, 
   clust <- parallel::makeCluster(cores[1]-1)
   doParallel::registerDoParallel(clust)
 
+  set.seed(220324)
+
   a <- 1
-  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dopar% {
+  ParResults <- foreach::foreach(a = 1:EqualIter, .combine = ParOutput) %dorng% {
     ParEqualIterPredict(TrainingData, UnknownData, GrpMem=GroupMembership, ShapeGPA=ShapeGPA, Sliding=Sliding, SlidingLMindex=SlidingLMindex, Bending=Bending, PClim=PClim, SizeShape = SizeShape, SampleSize = SampleSize)
   }
 
