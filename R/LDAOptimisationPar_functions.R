@@ -3,6 +3,7 @@
 
 
 
+
 #' LDA correct cross-validation with equal sample size using parallel processing
 #'
 #' This function takes a matrix of variables of known group membership and returns
@@ -57,18 +58,7 @@
 
 
 LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, Bending=TRUE, SlidingLMindex=NULL, SizeShape=FALSE, PClim=10){
-  #DiscriminationData=Shape#BlackRatGPA$PCscores
-  #GroupMembership=Groups
-  #EqualIter=100
-  #PClim=3
-  #ShapeGPA=TRUE; Verbose=TRUE; Sliding=NULL;
-  #SizeShape=FALSE
-  #SampleSize=NA; Sliding=NULL; Bending=TRUE; SlidingLMindex=NULL; SizeShape=FALSE; PClim=10
 
-  #DiscriminationData = M1GPA$PCscores[RemPos,1:PCdim]
-  #GroupMembership = Grouping[RemPos]
-  #ShapeGPA = FALSE
-  #PClim = PCdim
 
   if (ShapeGPA==TRUE & length(dim(DiscriminationData))==2){
     stop('DiscriminationData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
@@ -135,7 +125,9 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
     if (ShapeGPA==TRUE){
       BalDataShape <- DiscriminationData[,,BalancingGrps$IndexedLocations]
+
       invisible(utils::capture.output(BalData <- Morpho::procSym(BalDataShape, sizeshape = SizeShape, outlines = Sliding, SMvector = SlidingLMindex, bending = Bending)$PCscores))
+
       LDAres <- MASS::lda(x = BalData[,1:PClim], grouping=BalancingGrps$Newfactors, CV=TRUE)
     } else {
       BalData <- stats::prcomp(x = DiscriminationData[BalancingGrps$IndexedLocations,])
@@ -227,12 +219,6 @@ LDACVPar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleS
 
 
 LDACVStepwisePar <- function(DiscriminationData, GroupMembership, EqualIter=100, SampleSize=NA, Verbose=FALSE, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, Bending=TRUE, SizeShape=FALSE, PClim=10, PlotResults=TRUE, CombinePlots=FALSE){
-  #TestData <- readRDS('C:/Users/Arder/Desktop/Collaborations/Loukas Koungoulos/Mungo Dingo Project/LakeMongo/MungoDingoData.R')
-  #DiscriminationData = TestData$Data[,,-1]; GroupMembership = TestData$Info$Class[-1]; EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
-
-  #DiscriminationData = LMDataArray; GroupMembership = Groups; EqualIter=1000; SampleSize=NA; Verbose=FALSE; ShapeGPA=TRUE; Sliding=NA; SizeShape=FALSE; PClim=20; PlotResults=TRUE; CombinePlots=FALSE
-  #DiscriminationData = Shape
-  #DiscriminationData = SelectPigData$LMs; GroupMembership=SelectPigData$Info$Group; EqualIter=10; SampleSize=NA; Verbose=TRUE; ShapeGPA=FALSE; Sliding=SSLMsList; SlidingLMindex=SSLMsIndex; Bending=TRUE; SizeShape=FALSE; PClim=10; PlotResults=TRUE; CombinePlots=FALSE
 
 
   if (ShapeGPA==TRUE & length(dim(DiscriminationData))==2){

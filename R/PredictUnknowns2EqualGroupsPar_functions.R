@@ -54,39 +54,7 @@
 
 PredictUnknownsEqualPar <- function(TrainingData, UnknownData, GroupMembership, EqualIter=100, SampleSize=NA, ShapeGPA=FALSE, Sliding=NULL, SlidingLMindex=NULL, Bending=TRUE, SizeShape=FALSE, PClim=10){
 
-  #DiscriminationData=Scores
-  #DiscriminationData=TestData$Data[,,-1]
-  #GroupMembership=Groups
-  #EqualIter=100
-  #PClim=3
-  #ShapeGPA=TRUE; Verbose=FALSE; Sliding=NA;
-  #SizeShape=FALSE; PCA=FALSE
-  #KFold=4
 
-  #TrainingData = Shape[,,-c(1:2)]#BlackRatGPA$rotated
-  #UnknownData = Shape[,,1:2]#BlackRatGPA$rotated[,,1:4]
-  #GroupMembership=Groups[-c(1:2)]
-  #EqualIter=100
-  #PClim=3; ShapeGPA = TRUE; KFold = 5
-
-
-  #TrainingData = CompDatasort$ShapeData[,,ArchRem]; UnknownData = CompDatasort$ShapeData[,,-ArchRem]; GroupMembership= CompDatasort$info$species[ArchRem]
-
-  #TrainingData = TestData$Data[,,-1]; UnknownData = TestData$Data[,,1]; GroupMembership= TestData$Info$Class[-1]
-  #EqualIter=100; SampleSize=NA; ShapeGPA=TRUE; Sliding=NULL; SizeShape=FALSE; PClim=16
-
-#
-#   TrainingData = dingo_data_load$ScaledConfigs[,,-arch_spp_index]
-#   UnknownData = dingo_data_load$ScaledConfigs[,,arch_spp_index]
-#   GroupMembership = dingo_data_load$info$Sp_grp_2[-arch_spp_index]
-#   EqualIter = predict_iters
-#   SampleSize = NA
-#   ShapeGPA = TRUE
-#   Sliding = NULL
-#   SlidingLMindex = NULL
-#   Bending = TRUE
-#   SizeShape = TRUE
-#   PClim = i
 
   if (ShapeGPA==TRUE & length(dim(TrainingData))==2){
     stop('TrainingData is a matrix, but ShapeGPA set to TRUE, if the data is shape data then it must be in array format, with LMs as rows, dimensions as columns and specimens as slices')
